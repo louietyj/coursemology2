@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 module Course::Assessment::Submission::WorkflowEventConcern
   extend ActiveSupport::Concern
+  include Course::LessonPlan::PersonalizationConcern
 
   included do
     before_validation :assign_experience_points, if: :workflow_state_changed?
@@ -13,9 +14,24 @@ module Course::Assessment::Submission::WorkflowEventConcern
   # This finalises all current answers as well.
   def finalise(_ = nil)
     self.submitted_at = Time.zone.now
+
+    # Freeze personal time at whatever the current times for the user are
+    course_user = creator.course_users.find_by(course: assessment.course)
+    personal_time = assessment.lesson_plan_item.setdefault_personal_time_for(course_user)
+    reference_time = assessment.lesson_plan_item.eager_loaded_reference_time_for(course_user)
+    personal_time.start_at ||= reference_time.start_at
+    personal_time.end_at ||= reference_time.end_at
+    personal_time.bonus_end_at ||= reference_time.bonus_end_at
+    personal_time.submitted_at = submitted_at
+    personal_time.save!
+
     current_answers.select(&:attempting?).each(&:finalise!)
 
     assign_zero_experience_points if assessment.questions.empty?
+
+    # Trigger timeline recomputation
+    # NB: We are not recomputing on unsubmission because unsubmit is not done by the student
+    update_personalized_timeline_for(course_user)
   end
 
   # Handles the marking of a submission.
@@ -59,6 +75,13 @@ module Course::Assessment::Submission::WorkflowEventConcern
     self.submitted_at = nil
     self.publisher = nil
     self.published_at = nil
+
+    # Clear personal time's submitted_at
+    # NB: We are not recomputing on unsubmission because unsubmit is not done by the student
+    course_user = creator.course_users.find_by(course: assessment.course)
+    personal_time = assessment.lesson_plan_item.setdefault_personal_time_for(course_user)
+    personal_time.submitted_at = nil
+    personal_time.save!
   end
 
   # Handles re-submitting a published submission's programming answers when there are
