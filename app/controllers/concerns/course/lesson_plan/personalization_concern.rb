@@ -31,10 +31,6 @@ module Course::LessonPlan::PersonalizationConcern
 
         # Copy over from reference time
         personal_time = course_assessment.setdefault_personal_time_for(course_user)
-        reference_time = course_assessment.eager_loaded_reference_time_for(course_user)
-        personal_time.start_at = reference_time.start_at
-        personal_time.end_at = reference_time.end_at
-        personal_time.bonus_end_at = reference_time.bonus_end_at
         personal_time.save! if personal_time.changed?
       end
 

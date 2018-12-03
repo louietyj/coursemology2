@@ -18,10 +18,6 @@ module Course::Assessment::Submission::WorkflowEventConcern
     # Freeze personal time at whatever the current times for the user are
     course_user = creator.course_users.find_by(course: assessment.course)
     personal_time = assessment.lesson_plan_item.setdefault_personal_time_for(course_user)
-    reference_time = assessment.lesson_plan_item.eager_loaded_reference_time_for(course_user)
-    personal_time.start_at ||= reference_time.start_at
-    personal_time.end_at ||= reference_time.end_at
-    personal_time.bonus_end_at ||= reference_time.bonus_end_at
     personal_time.submitted_at = submitted_at
     personal_time.save!
 

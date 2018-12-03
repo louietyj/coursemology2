@@ -139,7 +139,15 @@ class Course::LessonPlan::Item < ApplicationRecord
 
   # Gets the existing personal time for course_user, or instantiates and returns a new one
   def setdefault_personal_time_for(course_user)
-    eager_loaded_personal_time_for(course_user) || personal_times.new(course_user: course_user)
+    personal_time = eager_loaded_personal_time_for(course_user)
+    return personal_time if personal_time.present?
+
+    personal_time = personal_times.new(course_user: course_user)
+    reference_time = eager_loaded_reference_time_for(course_user)
+    personal_time.start_at = reference_time.start_at
+    personal_time.end_at = reference_time.end_at
+    personal_time.bonus_end_at = reference_time.bonus_end_at
+    personal_time
   end
 
   # Finds the lesson plan items which are starting within the next day for a given course.
