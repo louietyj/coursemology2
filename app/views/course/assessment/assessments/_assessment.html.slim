@@ -21,19 +21,41 @@
         = link_to course_achievement_path(current_course, achievement) do
           = display_achievement_badge(achievement)
   td.table-start-at
+    = fa_icon 'lock'
+    = ' '
     - if condition_not_satisfied(assessment)
       div.condition-not-satisfied data-toggle='tooltip' title="#{t('.condition_not_satisfied')}"
         = format_datetime(assessment.start_at, :short)
     - else
       = format_datetime(assessment.start_at, :short)
+      - if assessment.time_for(current_course_user).is_a? Course::PersonalTime
+        br
+        strike
+          = 'Ref: '
+          = format_datetime(assessment.eager_loaded_reference_time_for(current_course_user).bonus_end_at, :short)
   - if show_bonus_attributes?
     td.table-bonus-cut-off
       - if assessment.bonus_end_at.present? && assessment.time_bonus_exp > 0
+        = fa_icon 'lock'
+        = ' '
         = format_datetime(assessment.bonus_end_at, :short)
+        - if assessment.time_for(current_course_user).is_a? Course::PersonalTime
+          br
+          strike
+            = 'Ref: '
+            = format_datetime(assessment.eager_loaded_reference_time_for(current_course_user).bonus_end_at, :short)
       - else
         = '-'
   - if show_end_at?
     td.table-end-at
-      = format_datetime(assessment.end_at, :short) if assessment.end_at.present?
+      - if assessment.end_at.present?
+        = fa_icon 'lock'
+        = ' '
+        = format_datetime(assessment.time_for(current_course_user).end_at, :short)
+        - if assessment.time_for(current_course_user).is_a? Course::PersonalTime
+          br
+          strike
+            = 'Ref: '
+            = format_datetime(assessment.eager_loaded_reference_time_for(current_course_user).end_at, :short)
   td.table-buttons colspan=2
     = render 'assessment_management_buttons', assessment: assessment

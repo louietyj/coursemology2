@@ -3,7 +3,9 @@ class Course::Assessment::AssessmentsController < Course::Assessment::Controller
   before_action :load_question_duplication_data, only: [:show, :reorder]
 
   def index
-    @assessments = @assessments.ordered_by_date_and_title.with_submissions_by(current_user)
+    @assessments = @assessments.eager_load_personal_times_for(current_course_user).
+                                eager_load_reference_times_for(current_course_user).
+                                ordered_by_date_and_title.with_submissions_by(current_user)
     @conditional_service = Course::Assessment::AchievementPreloadService.new(@assessments)
   end
 

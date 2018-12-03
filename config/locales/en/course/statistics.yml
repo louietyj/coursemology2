@@ -3,7 +3,7 @@ en:
     statistics:
       serial_number: 'S/N'
       student:
-        header: 'Student Statistics'
+        header: 'Personalized Timelines'
         my_students_tab: 'My Students'
         all_students_tab: 'All Students'
       course_student_statistics:
