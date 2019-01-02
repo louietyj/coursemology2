@@ -33,7 +33,9 @@ class Course::LessonPlan::ItemsController < Course::LessonPlan::Controller
 
   def render_json_response
     @items = @items.with_actable_types(@item_settings.actable_hash).
-             includes(:actable).to_a.
+             preload(:actable).
+             with_reference_times_for(current_course_user).
+             with_personal_times_for(current_course_user).
              select { |item| can?(:show, item.actable) }
 
     @milestones = current_course.lesson_plan_milestones.ordered_by_date

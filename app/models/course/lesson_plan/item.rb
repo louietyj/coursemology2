@@ -64,15 +64,22 @@ class Course::LessonPlan::Item < ApplicationRecord
   end)
 
   scope :with_personal_times_for, (lambda do |course_user|
+    return all if course_user.nil?
+
     personal_times = Course::PersonalTime.where(course_user_id: course_user.id, lesson_plan_item_id: all).to_a
 
-    all.to_a.tap do |result|
+    preload(:actable).all.to_a.tap do |result|
       preloader = ActiveRecord::Associations::Preloader::ManualPreloader.new
       preloader.preload(result, :personal_times, personal_times)
+
+      # Great big hack to make sure that actable items
+      preloader.preload(result.map(&:actable).map(&:acting_as), :personal_times, personal_times)
     end
   end)
 
   scope :with_reference_times_for, (lambda do |course_user|
+    return all if course_user.nil?
+
     eager_load(:reference_times).
       where(course_reference_times: { reference_timeline_id: course_user.reference_timeline_id ||
             course_user.course.default_reference_timeline.id })
