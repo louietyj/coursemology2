@@ -9,6 +9,8 @@ export const initialState = {
     [fields.BONUS_END_AT]: false,
     [fields.END_AT]: true,
     [fields.PUBLISHED]: true,
+    [fields.HAS_PERSONAL_TIMES]: true,
+    [fields.AFFECTS_PERSONAL_TIMES]: true,
   },
 };
 

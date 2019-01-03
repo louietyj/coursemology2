@@ -2,7 +2,7 @@ import { defineMessages } from 'react-intl';
 import { fields } from 'course/lesson-plan/constants';
 
 const {
-  ITEM_TYPE, TITLE, START_AT, BONUS_END_AT, END_AT, PUBLISHED, LOCATION,
+  ITEM_TYPE, TITLE, START_AT, BONUS_END_AT, END_AT, PUBLISHED, HAS_PERSONAL_TIMES, AFFECTS_PERSONAL_TIMES, LOCATION,
   DESCRIPTION, EVENT_TYPE,
 } = fields;
 
@@ -42,6 +42,14 @@ const translations = defineMessages({
   [PUBLISHED]: {
     id: 'course.lessonPlan.published',
     defaultMessage: 'Published',
+  },
+  [HAS_PERSONAL_TIMES]: {
+    id: 'course.lessonPlan.hasPersonalTimes',
+    defaultMessage: 'Has personal times',
+  },
+  [AFFECTS_PERSONAL_TIMES]: {
+    id: 'course.lessonPlan.affectsPersonalTimes',
+    defaultMessage: 'Affects personal times',
   },
 });
 

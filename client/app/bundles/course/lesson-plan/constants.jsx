@@ -12,6 +12,8 @@ export const fields = mirrorCreator([
   'BONUS_END_AT',
   'END_AT',
   'PUBLISHED',
+  'HAS_PERSONAL_TIMES',
+  'AFFECTS_PERSONAL_TIMES',
   'LOCATION',
   'DESCRIPTION',
   'EVENT_TYPE',

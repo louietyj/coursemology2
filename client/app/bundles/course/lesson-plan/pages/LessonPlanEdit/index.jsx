@@ -7,7 +7,7 @@ import { fields } from 'course/lesson-plan/constants';
 import MilestoneRow from './MilestoneRow';
 import ItemRow from './ItemRow';
 
-const { ITEM_TYPE, TITLE, START_AT, BONUS_END_AT, END_AT, PUBLISHED } = fields;
+const { ITEM_TYPE, TITLE, START_AT, BONUS_END_AT, END_AT, PUBLISHED, HAS_PERSONAL_TIMES, AFFECTS_PERSONAL_TIMES } = fields;
 
 const styles = {
   page: {
@@ -38,6 +38,8 @@ class LessonPlanEdit extends React.Component {
           { columnsVisible[BONUS_END_AT] ? headerFor(BONUS_END_AT) : null }
           { columnsVisible[END_AT] ? headerFor(END_AT) : null }
           { columnsVisible[PUBLISHED] ? headerFor(PUBLISHED) : null }
+          { columnsVisible[HAS_PERSONAL_TIMES] ? headerFor(HAS_PERSONAL_TIMES) : null }
+          { columnsVisible[AFFECTS_PERSONAL_TIMES] ? headerFor(AFFECTS_PERSONAL_TIMES) : null }
         </tr>
       </thead>
     );
