@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 class Course::StatisticsController < Course::ComponentController
+  include Course::LessonPlan::PersonalizationConcern
+
   before_action :authorize_read_statistics!
 
   def student
@@ -9,14 +11,33 @@ class Course::StatisticsController < Course::ComponentController
     all_students = course_users.students.ordered_by_experience_points.with_video_statistics
     @phantom_students, @students = all_students.partition(&:phantom?)
     @service = Course::GroupManagerPreloadService.new(staff)
+    @lrs = get_lrs(all_students)
   end
 
   def staff
     @staffs = current_course.course_users.teaching_assistant_and_manager
     @staffs = CourseUser.order_by_average_marking_time(@staffs)
+    @lrs = get_lrs(@staffs)
   end
 
   private
+
+  def get_lrs(course_users)
+    lrs = course_users.map do |course_user|
+      items = current_course.lesson_plan_items.published.
+              with_reference_times_for(course_user).
+              with_personal_times_for(course_user).
+              to_a
+      items = items.sort_by { |x| x.time_for(course_user).start_at }
+      [
+        course_user.id,
+        compute_learning_rate_ema(
+          course_user, items.select(&:affects_personal_times?), lesson_plan_items_submission_time_hash(course_user)
+        )
+      ]
+    end
+    lrs.to_h
+  end
 
   def authorize_read_statistics!
     authorize!(:read_statistics, current_course)

@@ -1,5 +1,7 @@
 - course_videos = current_course.videos
 
+= @lrs
+
 table.table.table-hover
   tr
     th.text-center
@@ -14,6 +16,9 @@ table.table.table-hover
     - if current_course.gamified?
       th.text-center
         = t('.experience_points')
+    - if current_course.show_personalized_timeline_features?
+      th.text-center
+        = t('.learning_rate')
     - if course_videos.exists? && can?(:analyze_videos, current_course)
       th.text-center
         = t('.video_watched', total: course_videos.count)
@@ -35,6 +40,9 @@ table.table.table-hover
         td.text-center
           = link_to student.experience_points,
                     course_user_experience_points_records_path(current_course, student)
+      - if current_course.show_personalized_timeline_features?
+        td.text-center
+          = @lrs[student.id]
       - if course_videos.exists? && can?(:analyze_videos, current_course)
         td.text-center
           = link_to student.video_submission_count,
