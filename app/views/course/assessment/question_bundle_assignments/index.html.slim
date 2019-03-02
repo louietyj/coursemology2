@@ -2,12 +2,46 @@
 
 h2 = t('.prepared_bundle_assignments')
 
+h3 = 'Hard validations'
+ul.fa-ul
+  li
+    span.fa-li = fa_icon 'check'.freeze
+    = 'Question bundles do not have overlapping questions'
+  li
+    span.fa-li = fa_icon 'check'.freeze
+    = 'Question groups do not have overlapping bundles'
+  li
+    span.fa-li = fa_icon 'times'.freeze
+    = 'All students have exactly one bundle assigned per question group'
+  li = 'Failed: Trang, Dexter'
+  li
+    span.fa-li = fa_icon 'times'.freeze
+    = 'Students are not assigned a question that was previously attempted'
+  li = 'Failed: Louie'
+
+h3 = 'Soft validations'
+ul.fa-ul
+  li
+    span.fa-li = fa_icon 'check'.freeze
+    = 'Bundles are evenly distributed'
+  li = 'Metric: 0.9'
+  li
+    span.fa-li = fa_icon 'check'.freeze
+    = 'Bundle assignments are not strongly correlated (students with similar assignments)'
+  li = 'Metric: 0.1'
+  li
+    span.fa-li = fa_icon 'times'.freeze
+    = 'Students are unable to predict with high accuracy their assigned bundles (lift)'
+  li = 'Failed lifts: Louie (intro=2.3)'
+
 = link_to t('.rerandomize_all'),
           recompute_course_assessment_question_bundle_assignments_path,
           method: :post, class: %w(btn btn-primary)
 =< link_to t('.rerandomize_unassigned'),
            recompute_course_assessment_question_bundle_assignments_path(only_unassigned: true),
            method: :post, class: %w(btn btn-primary)
+
+hr
 
 - has_unbundled = @assignment_set.assignments.lazy.map { |k, v| v[nil].present? }.any?
 table.table.table-hover
