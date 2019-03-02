@@ -9,6 +9,7 @@ gem 'tzinfo-data', platforms: [:mswin, :mswin64]
 gem 'bundler', '>= 1.10.3'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
+gem 'kabloomz'
 
 # Use PostgreSQL for the backend
 gem 'pg'
