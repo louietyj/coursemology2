@@ -17,6 +17,16 @@ class Course::Assessment::QuestionBundleAssignmentsController < Course::Assessme
     @past_assignments = past_assignments_hash
     @assignment_randomizer = AssignmentRandomizer.new(@assessment)
     @assignment_set = @assignment_randomizer.load
+    @validation_results = @assignment_randomizer.validate(@assignment_set)
+    @aggregated_offending_cells = {} # { [student_id, group_id]: [ [validation_id, error, params] ] }
+    @validation_results.each do |validation_id, result|
+      (result.offending_cells || {}).each do |cell, errors|
+        @aggregated_offending_cells[cell] ||= []
+        errors.each do |error, params|
+          @aggregated_offending_cells[cell] << [validation_id, error, params]
+        end
+      end
+    end
   end
 
   def create

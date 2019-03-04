@@ -9,6 +9,15 @@ h2 = t('.prepared_bundle_assignments')
            recompute_course_assessment_question_bundle_assignments_path(only_unassigned: true),
            method: :post, class: %w(btn btn-primary)
 
+h3 = 'Hard validations'
+ul.fa-ul
+  - @validation_results.each do |validation_id, result|
+    li
+      span.fa-li = fa_icon (result.pass ? 'check'.freeze : 'times'.freeze)
+      = t(".validations.#{validation_id}.desc")
+    - result.info.each do |info_id, params|
+      li = t(".validations.#{validation_id}.#{info_id}", **params)
+
 - has_unbundled = @assignment_set.assignments.lazy.map { |k, v| v[nil].present? }.any?
 table.table.table-hover
   thead
@@ -29,14 +38,25 @@ table.table.table-hover
           td = @name_lookup[user_id]
           = f.simple_fields_for :bundles do |g|
             - @question_group_lookup.each do |question_group_id, question_group|
-              td = g.input_field "group_#{question_group_id}".to_sym,
+              td
+                = g.input_field "group_#{question_group_id}".to_sym,
                       collection: @assignment_randomizer.group_bundles[question_group_id],
                       label_method: lambda { |qbid| @question_bundle_lookup[qbid] },
                       selected: assignment[question_group_id],
                       include_blank: true,
                       label: false
+                - if @aggregated_offending_cells[[user_id, question_group_id]].present?
+                  = ' '
+                  - @aggregated_offending_cells[[user_id, question_group_id]].each do |validation_id, error, params|
+                    span title=t(".validations.#{validation_id}.#{error}", **params)
+                      = fa_icon 'exclamation-triangle'.freeze
           - if has_unbundled
             td
+              - if @aggregated_offending_cells[[user_id, question_group_id]].present?
+                - @aggregated_offending_cells[[user_id, question_group_id]].each do |validation_id, error, params|
+                  span title=t(".validations.#{validation_id}.#{error}", **params)
+                    = fa_icon 'exclamation-triangle'.freeze
+                br
               ul
                 - assignment[nil].each do |bundle|
                   li = @question_bundle_lookup[bundle]
